@@ -2,6 +2,12 @@
 
 Esta aplicación está basada en JGroups.
 
+Al abrirlo con Eclipse:
+
+Propiedades >> Java Build Path >> Libraries >> Add external JARS:
+    - El JAR de JGroups en: jar/jgroup/
+    - Todos los JARS de Zookeeper: apache-zookeeper-3.6.3-bin/lib/*
+
 ## Para ejecutarlo en DOCKER
 Ejecutar (en el directorio raíz del proyecto):
 

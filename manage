@@ -1,5 +1,8 @@
 #! /bin/bash
 
+# TODO:
+# - Añadir opción y crear un script para arrancar un servidor ante la caída de un servidor === TOLERANCIA FALLOS.
+
 
 # =================================================================================================================
 # Functions:
@@ -9,8 +12,11 @@ function toLower() {
 }
 
 function start() {
+    # * Por si se decide hacer dinámico el número de servidores. Haría falta crear los contenedores con docker
+    # * dentro del bucle for y no con docker-compose.
     # echo "¿Cuántos servidores va a haber?"
     # read nServers
+    # * Si se quieren ampliar los servidores a mano, hace falta añadirlos al docker-compose
     nServers=3
 
     echo "Desplegando $nServers servidores DHT..."
@@ -21,7 +27,7 @@ function start() {
         echo "Desplegando servidor número $i"
         gnome-terminal --profile=BASH --title=DHT${i} -- \
         docker exec -it dht${i} \
-        java -Djava.net.preferIPv4Stack=true -Djgroups.bind_addr=127.0.0.1 es.upm.dit.dscc.DHT.DHTMain DHT_DSCC 3
+        java -Djava.net.preferIPv4Stack=true -Djgroups.bind_addr=127.0.0.1 es.upm.dit.dscc.DHT.DHTMain DHT_DSCC $nServers
     done
 }
 
