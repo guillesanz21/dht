@@ -1,0 +1,86 @@
+#! /bin/bash
+
+
+# =================================================================================================================
+# Functions:
+# -----------------------------------------------------------------------------------------------------------------
+function toLower() {
+    echo $(echo ${@} | tr '[:upper:]' '[:lower:]')
+}
+
+function start() {
+    # echo "¿Cuántos servidores va a haber?"
+    # read nServers
+    nServers=3
+
+    echo "Desplegando $nServers servidores DHT..."
+
+    docker-compose up -d
+
+    for (( i=1; i<=$nServers; i++ )); do
+        echo "Desplegando servidor número $i"
+        gnome-terminal --profile=BASH --title=DHT${i} -- \
+        docker exec -it dht${i} \
+        java -Djava.net.preferIPv4Stack=true -Djgroups.bind_addr=127.0.0.1 es.upm.dit.dscc.DHT.DHTMain DHT_DSCC 3
+    done
+}
+
+
+# =================================================================================================================
+# HELP:
+# -----------------------------------------------------------------------------------------------------------------
+help() {
+  cat <<-EOF
+    
+      Usage: $0 [command] [options]
+    
+      Commands:
+    
+      build - Build the docker images for the project.
+    
+      start|up -  Creates the application containers from the built images
+            and starts the services based on the docker-compose.yml file.
+      logs - Display the logs from the docker compose run (ctrl-c to exit).
+      stop - Stops the services.  This is a non-destructive process.  The volumes and containers
+             are not deleted so they will be reused the next time you run start.
+    
+      down|rm - Brings down the services and removes the containers.
+EOF
+  exit 1
+}
+
+
+# =================================================================================================================
+# Main:
+# -----------------------------------------------------------------------------------------------------------------
+COMMAND=$(toLower ${1})
+# shift will change the output of ${@} from "./manage [command] [options]" to "[options]"
+# It there is no command, it will default the value of COMMAND to "help"
+shift || COMMAND=help
+
+case "${COMMAND}" in
+    build)
+        echo "Building..."
+        docker-compose build
+        ;;
+    start|up)
+        echo "Starting..."
+        start
+        ;;
+    logs)
+        echo "Printing logs..."
+        docker-compose logs-f
+        ;;
+    stop)
+        echo "Stopping..."
+        docker-compose stop
+        ;;
+    rm|down)
+        echo "Deleting..."
+        docker-compose down
+        docker rmi fcon.dht
+        ;;
+    *)
+        help
+        ;;
+esac
