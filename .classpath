@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-13">
+		<attributes>
+			<attribute name="module" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/Users/aalonso/ownCloudUPM/home/docencia/DSCC/jgroups/snapshot/jgroups-4.0.0-SNAPSHOT.jar">
+		<attributes>
+			<attribute name="module" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/Users/aalonso/ownCloudUPM/home/docencia/DSCC/zookeeper/lib/zookeeper-3.4.14/zookeeper-3.4.14.jar">
+		<attributes>
+			<attribute name="module" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/Users/aalonso/ownCloudUPM/home/docencia/DSCC/zookeeper/lib/zookeeper-3.4.14/lib/audience-annotations-0.5.0.jar">
+		<attributes>
+			<attribute name="module" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/Users/aalonso/ownCloudUPM/home/docencia/DSCC/zookeeper/lib/zookeeper-3.4.14/lib/jline-0.9.94.jar">
+		<attributes>
+			<attribute name="module" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/Users/aalonso/ownCloudUPM/home/docencia/DSCC/zookeeper/lib/zookeeper-3.4.14/lib/netty-3.10.6.Final.jar">
+		<attributes>
+			<attribute name="module" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
