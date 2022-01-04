@@ -1,3 +1,5 @@
+// Basada en la clase: DHTJGroups
+
 package es.upm.dit.dscc.DHT;
 
 import java.util.ArrayList;
@@ -7,11 +9,11 @@ import java.util.Iterator;
 //import java.util.Iterator;
 import java.util.Set;
 
-import org.jgroups.JChannel;
+// import org.jgroups.JChannel;
 //import org.jgroups.Message;
-import org.jgroups.ReceiverAdapter;
-import org.jgroups.View;
-import org.jgroups.Address;
+// import org.jgroups.ReceiverAdapter;
+// import org.jgroups.View;
+// import org.jgroups.Address;
 
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Filter;
@@ -20,20 +22,20 @@ import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
-public class DHTJGroups implements DHTUserInterface {
+public class DHTZookeeper implements DHTUserInterface {
 
 	private java.util.logging.Logger LOGGER = DHTMain.LOGGER;
 
-	private SendMessagesDHT   sendMessages;     
+	// private SendMessagesDHT   sendMessages;     
 	private OperationBlocking mutex;
 	private TableManager      tableManager;
 
-	public DHTJGroups (
-			SendMessagesDHT sendMessages, 
+	public DHTZookeeper (
+			// SendMessagesDHT sendMessages, 
 			OperationBlocking mutex,
 			TableManager tableManager) {
 
-		this.sendMessages = sendMessages;
+		// this.sendMessages = sendMessages;
 		this.mutex        = mutex;
 		this.tableManager = tableManager;
 

@@ -15,17 +15,19 @@ import org.jgroups.Message;
  * in order to interact with the table.
  */
 public class DHTManager extends ReceiverAdapter  implements DHTUserInterface {
+	// Eliminar receive y ViewAccepted.
+	// Cambiar isQuorom: no se llama a ViewManager, sino a ZkManager
 
 	private java.util.logging.Logger LOGGER = DHTMain.LOGGER;
 
 	private int               nServersMax  = 3;
 	private int               nReplica     = 2;
-	private JChannel          channel;
-	private SendMessagesDHT   sendMessages;
+	private JChannel          channel;		// Borrar
+	private SendMessagesDHT   sendMessages;		// Borrar (o cambiar)
 	private OperationBlocking mutex;
-	private Address           localAddress;
+	private Address           localAddress;		// La clase Address es de JGroups --> Cambiar por String
 	private TableManager      tableManager;
-	private ReceiveMessagesDHT   receiveMessages;
+	private ReceiveMessagesDHT   receiveMessages;	// Borrar
 	private boolean           endConfigure = false;
 	private DHTUserInterface  dht;
 	private ViewManager       viewManager;
@@ -35,6 +37,7 @@ public class DHTManager extends ReceiverAdapter  implements DHTUserInterface {
 		LOGGER.warning("Start of configuration " + cluster);
 
 		try {
+			// Borrar todo salvo el localAddress, pero ahora hay que conseguirlo a través de zookeeper (zkManager)
 			channel = new JChannel().setReceiver(this);
 			localAddress = channel.address();
 			channel.connect(cluster);
@@ -54,6 +57,11 @@ public class DHTManager extends ReceiverAdapter  implements DHTUserInterface {
 	 * Configure the main objects in the DHT,
 	 */
 	private void configure() {
+		// Eliminar: SendMessagesDHT, comprobaciones localAddress, receiveMessages
+		// Cambiar viewManager por zkManager. 
+		//	- El localaddress ahora lo debería manejar él, así que no se le debería pasar, no?
+		//	- El resto de parametros ni idea
+		// Cambiar DHTJgroups por DHTZookeeper.
 		this.sendMessages    = new SendMessagesDHT(channel);
 		this.mutex           = new OperationBlocking();
 		if (localAddress == null) {
