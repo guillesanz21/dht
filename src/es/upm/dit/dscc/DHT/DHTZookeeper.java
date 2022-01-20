@@ -1,85 +1,44 @@
-// Basada en la clase: DHTJGroups
-
 package es.upm.dit.dscc.DHT;
 
+
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
+
 //import java.util.Collection;
 //import java.util.Iterator;
 import java.util.Set;
 
-// import org.jgroups.JChannel;
-//import org.jgroups.Message;
-// import org.jgroups.ReceiverAdapter;
-// import org.jgroups.View;
-// import org.jgroups.Address;
 
-import java.util.logging.ConsoleHandler;
-import java.util.logging.Filter;
-import java.util.logging.Handler;
-import java.util.logging.Level;
-import java.util.logging.LogRecord;
-import java.util.logging.Logger;
 
 public class DHTZookeeper implements DHTUserInterface {
 
 	private java.util.logging.Logger LOGGER = DHTMain.LOGGER;
-
-	// private SendMessagesDHT   sendMessages;     
+   
 	private OperationBlocking mutex;
 	private TableManager      tableManager;
+	private int nReplica;
 
-	public DHTZookeeper (
-			// SendMessagesDHT sendMessages, 
-			OperationBlocking mutex,
-			TableManager tableManager) {
-
-		// this.sendMessages = sendMessages;
+	public DHTZookeeper (OperationBlocking mutex, TableManager tableManager, int nReplica) {
 		this.mutex        = mutex;
 		this.tableManager = tableManager;
-
+		this.nReplica = nReplica;
+		
 	}
-
-	public Integer putMsg(DHT_Map map) {
+	
+	@Override
+	public Integer putMsg(DHT_Map map) {		
 		return putLocal(map);
-	}
-
+	}	
+	
 	@Override
 	public Integer put(DHT_Map map) {
-	
-		OperationsDHT operation; 
 		LOGGER.finest("PUT: Is invoked");
-		int value;
-	
-	
-		// Create the array of nodes where map should be stored
-		int nodes[] = tableManager.getNodes(map.getKey());
-		
-		for (int i = 1; i < nodes.length; i++) {
-			if (tableManager.isDHTLocalReplica(nodes[i], map.getKey())) {
-				LOGGER.fine("PUT: Local replica");
-				value = putLocal(map);
-			} else {
-				LOGGER.fine("PUT: Remote replica");
-				sendMessages.sendPut(tableManager.DHTAddress(nodes[i]), map, true); 			
-			}
-		}
-		
-		if (tableManager.isDHTLocal(nodes[0])) {
-			LOGGER.finest("PUT: The operation is local");
-			value = putLocal(map);
-		} else {
-			sendMessages.sendPut(tableManager.DHTAddress(nodes[0]), map, false);
-			operation = mutex.sendOperation();
-			LOGGER.finest("Returned value in put: " + operation.getValue());
-			return operation.getValue();
-		}
-
-		return 0;
+		//OperationsDHT operation = auxOpeMap(OperationEnum.PUT_MAP, map);
+		OperationsDHT operation = prepareOperation(OperationEnum.PUT_MAP, null, map);
+		LOGGER.finest("Returned value in put: " + operation.getValue());
+		System.out.println("El resultado es : " + operation.getValue());
+		return operation.getValue();			
 	}
 	
-
 	private Integer putLocal(DHT_Map map) {
 		DHTUserInterface  hashMap;
 		hashMap = tableManager.getDHT(map.getKey());
@@ -90,34 +49,20 @@ public class DHTZookeeper implements DHTUserInterface {
 		return hashMap.put(map);
 	}
 
-
 	@Override
 	public Integer get(String key) {
 
-		java.util.List<Address> DHTReplicas = new java.util.ArrayList<Address>();
-		OperationsDHT operation; 
-
-		for (Iterator<Address> iterator = DHTReplicas.iterator(); iterator.hasNext();) {
-			Address address = (Address) iterator.next();
-			LOGGER.finest("PUT: The operation is replicated");
-			if (tableManager.isDHTLocalReplica(key, address)) {
-				LOGGER.fine("PUT: Local replica");
-				return getLocal(key);
-			}
-		}
-
-		// Notify the operation to the cluster
-		if (tableManager.isDHTLocal(key)) {
-			LOGGER.finest("GET: The operation is local");
-			return getLocal(key);
-		} else {
-			sendMessages.sendGet(tableManager.DHTAddress(key), key, false);
-			operation = mutex.sendOperation();
-			LOGGER.fine("Returned value in get: " + operation.getValue());
-			return operation.getValue();
-		}
+		LOGGER.finest("GET: Is invoked");
+		OperationsDHT operation = prepareOperation(OperationEnum.GET_MAP, key, null); 
+		LOGGER.finest("Returned value in get: " + operation.getValue());
+		System.out.println("El resultado es : " + operation.getValue());
+		return operation.getValue();
 	}
-
+	@Override
+	public Integer getMsg(String key) {
+		
+		return getLocal(key);
+	}
 	private Integer getLocal(String key) {
 		DHTUserInterface  hashMap;
 		hashMap = tableManager.getDHT(key);
@@ -125,7 +70,6 @@ public class DHTZookeeper implements DHTUserInterface {
 		if (hashMap == null) {
 			LOGGER.warning("Error: this sentence should not get here");
 		}
-		
 		return hashMap.get(key);		
 	}
 	
@@ -136,33 +80,11 @@ public class DHTZookeeper implements DHTUserInterface {
 	@Override
 	public Integer remove(String key) {
 
-		OperationsDHT operation; 
 		LOGGER.finest("REMOVE: Is invoked");
-		int value;
-	
-	
-		// Create the array of nodes where map should be stored
-		int nodes[] = tableManager.getNodes(key);
-		
-		for (int i = 1; i < nodes.length; i++) {
-			if (tableManager.isDHTLocalReplica(nodes[i], key)) {
-				LOGGER.fine("PUT: Local replica");
-				value = removeLocal(key);
-			} else {
-				LOGGER.fine("REMOVE: Remote replica");
-				sendMessages.sendRemove(tableManager.DHTAddress(nodes[i]), key, true); 			
-			}
-		}
-		
-		if (tableManager.isDHTLocal(nodes[0])) {
-			LOGGER.finest("PUT: The operation is local");
-			return removeLocal(key);
-		} else {
-			sendMessages.sendRemove(tableManager.DHTAddress(nodes[0]), key, false);
-			operation = mutex.sendOperation();
-			LOGGER.finest("Returned value in put: " + operation.getValue());
-			return operation.getValue();
-		}
+		OperationsDHT operation = prepareOperation(OperationEnum.REMOVE_MAP, key, null);
+		//OperationsDHT operation = prepareOperation(OperationEnum.REMOVE_MAP, key, null); 	
+		LOGGER.finest("Returned value in remove: " + operation.getValue());
+		return operation.getValue();
 
 
 	}
@@ -171,46 +93,74 @@ public class DHTZookeeper implements DHTUserInterface {
 		DHTUserInterface  hashMap;
 		hashMap = tableManager.getDHT(key);
 		
-		if (hashMap == null) {
-			LOGGER.warning("Error: this sentence should not get here");
+		if (hashMap != null) {
+			return hashMap.remove(key);	
 		}
-		
+		LOGGER.warning("No se puede realizar");
 		return hashMap.remove(key);		
 	}
 	
 	@Override
 	public boolean containsKey(String key) {
 		Integer isContained = get(key);
-		if (isContained == null) {
-			return false;
+		boolean contained; 
+		
+		if (isContained != null) {
+			contained = true;
+			return contained;
 		} else {
-			return true;
+			contained = false; 
+			return contained;
 		}
 	}
 	
 	@Override
 	public Set<String> keySet() {
-		// Notify the operation to the cluster
-
-		// Update the operation
-		return null; //hashMap.keySet();
+		return null; 
 	}
 
 	@Override
 	public ArrayList<Integer> values() {
-		// Notify the operation to the cluster
-
-		// Update the operation
-		return null;//hashMap.values();
+		return null;
 
 	}
-
 	@Override
-	public String toString() {
-		
+	public String toString() {	
 		return tableManager.toString();
 
 	}
+	/*
+	 * En este método decidimos como se van a pasar las operaciones entre los servidores. El orden de los datos es: 
+	 * 	1) El primer dato sera Nreplica, el array de replicas
+	 * 	2) Los nodos a los que afecta la operacion
+	 * 	3) la operacion en si
+	 * Serializamos los datos y se los pasamos a zkOp que crea los nodos para las operaciones. 
+	 * Actualizamos el OprationpBlocking a través del mutex de tal manera de que no se realicen dos operaciones a la vez y haya exclusión mutua.
+	 */
+	
 
+
+	
+	
+	
+	public OperationsDHT prepareOperation(OperationEnum Op, String key, DHT_Map map) {
+		OperationsDHT operation;
+		int nodes[];
+		if (key == null) {
+			operation = new OperationsDHT(Op, map); 	
+			nodes = tableManager.getNodes(map.getKey());		
+		} else {
+			operation = new OperationsDHT(Op, key);
+			nodes = tableManager.getNodes(key);
+		}
+		
+		Data operationData = new Data(nReplica, nodes, operation);
+		byte[] dataSerialized = Serializator.serialize(operationData);
+		ZkOperation operationZk = new ZkOperation(dataSerialized, mutex);
+		LOGGER.finest("Entremos en mutex.sendOperation()");
+		operation = mutex.sendOperation();
+		return operation;
+
+	}
 
 }

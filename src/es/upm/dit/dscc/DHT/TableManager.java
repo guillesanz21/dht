@@ -1,11 +1,8 @@
 package es.upm.dit.dscc.DHT;
 
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Set;
 
-import org.jgroups.Address;
-import org.jgroups.View;
+import java.util.Set;
 
 /**
  * @author aalonso
@@ -18,26 +15,42 @@ public class TableManager {
 
 	private int       nReplica;
 	private int       nServersMax;
-	private Address   localAddress;
+	private String   localAddress;
   
 	// Each server is assigned to a position in these tables
 	
 	// DHTServers associates the position in the DHT servers to corresponding address (JGroups)
 	// The address is used for exchanging messages between the servers
-	private HashMap<Integer, Address> DHTServers = new HashMap<Integer, Address>();
+	private HashMap<Integer, String> DHTServers = new HashMap<Integer, String>();
 	// Associates the position with the DHT tables to a table (HashMap) local
 	// The number of the local DHT tables depends on the replica number
 	// One DHTUserInterface may not be used when the server has not to save it
 	private HashMap<Integer, DHTUserInterface> DHTTables = new HashMap<Integer, DHTUserInterface>();
 
 	
-	public TableManager(Address localAddress,
+	public TableManager(String localAddress,
 			int     nServersMax, 
 			int     nReplica) {
 
 		this.localAddress = localAddress;
 		this.nServersMax  = nServersMax;
 		this.nReplica     = nReplica;
+	}
+	
+	/**
+	 * Setter of localAddress attribute
+	 * @param address
+	 */
+	public void setLocalAddress(String address) {
+		this.localAddress = address;
+	}
+	
+	/**
+	 * Getter of localAddress attribute
+	 * @return String of the localAddress
+	 */
+	public String getLocalAddress() {
+		return this.localAddress;
 	}
 
 	/**
@@ -72,7 +85,7 @@ public class TableManager {
 	 * @param address the address to get
 	 * @return the position of the address
 	 */
-	public Integer getPos (Address address) {
+	public Integer getPosition (String address) {
 
 		int posAddress = 0;
 		for (int i = 0; i < DHTServers.size(); i++){
@@ -131,7 +144,7 @@ public class TableManager {
 	 * @return true if the table associated to the key is stored in
 	 * the provided address
 	 */
-	public boolean isDHTLocalReplica (String key, Address address) { 
+	public boolean isDHTLocalReplica (String key, String address) { 
 		//int pos = getPos(key);
 		return address.equals(localAddress);
 	}
@@ -181,7 +194,7 @@ public class TableManager {
 	 * @param pos the position
 	 * @return the address associated to the position
 	 */
-	public Address DHTAddress (int pos) {
+	public String DHTAddress (int pos) {
 		//Address aux = DHTServers.get(pos);
 		return DHTServers.get(pos);
 	}
@@ -192,7 +205,7 @@ public class TableManager {
 	 * @param key the key
 	 * @return the address associated to the key
 	 */
-	public Address DHTAddress (String key) {
+	public String DHTAddress (String key) {
 		// NO REPLICATION!!!!
 		int pos = getPos(key);
 		return DHTServers.get(pos);
@@ -211,8 +224,8 @@ public class TableManager {
 	 * @param key the key
 	 * @return the list of the addresses
 	 */
-	java.util.List<Address> DHTReplicas (String key) {
-		java.util.List<Address> DHTReplicas = new java.util.ArrayList<Address>();
+	java.util.List<String> DHTReplicas (String key) {
+		java.util.List<String> DHTReplicas = new java.util.ArrayList<String>();
 
 		int pos = getPos(key);
 
@@ -231,7 +244,7 @@ public class TableManager {
 	 * Get the DHT servers
 	 * @return the DHT servers
 	 */
-	HashMap<Integer, Address> getDHTServers() {
+	HashMap<Integer, String> getDHTServers() {
 		return DHTServers;
 	}
 	
@@ -278,4 +291,6 @@ public class TableManager {
 
 
 }
+
+
 

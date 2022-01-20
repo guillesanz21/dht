@@ -2,37 +2,54 @@ version: '3.1'
 
 services:
   dht1:
-    image: fcon.dht
-    build:
-      context: .
-      dockerfile: ./Dockerfile
+    image: fcon_dht
+    #build:
+    #  context: .
+    #  dockerfile: ./Dockerfile
     container_name: dht1
     restart: always
     hostname: dht1
     tty: true
     network_mode: host
+    volumes:
+      - /home/javi/Nextcloud/Universidad/Master/1_Cuatri/FCON/final/dht/jar:/application
+      - /home/javi/Nextcloud/Universidad/Master/1_Cuatri/FCON/LAB_1/apache-zookeeper-3.6.3-bin/lib:/zookeeper-lib
+      - /home/javi/Nextcloud/Universidad/Master/1_Cuatri/FCON/LAB_1/apache-zookeeper-3.6.3-bin/bin:/zookeeper-bin
+
 
   dht2:
-    image: fcon.dht
-    build:
-      context: .
-      dockerfile: ./Dockerfile
+    image: fcon_dht
+    #build:
+    #  context: .
+    #  dockerfile: ./Dockerfile
     container_name: dht2
     restart: always
     hostname: dht2
     tty: true
     network_mode: host
-
+    volumes:
+      - /home/javi/Nextcloud/Universidad/Master/1_Cuatri/FCON/final/dht/jar:/application
+      - /home/javi/Nextcloud/Universidad/Master/1_Cuatri/FCON/LAB_1/apache-zookeeper-3.6.3-bin/lib:/zookeeper-lib
+      - /home/javi/Nextcloud/Universidad/Master/1_Cuatri/FCON/LAB_1/apache-zookeeper-3.6.3-bin/bin:/zookeeper-bin
+      
   dht3:
-    image: fcon.dht
-    build:
-      context: .
-      dockerfile: ./Dockerfile
+    image: fcon_dht
+    #build:
+    #  context: .
+    #  dockerfile: ./Dockerfile
     container_name: dht3
     restart: always
     hostname: dht3
     tty: true
     network_mode: host
+    volumes:
+      - /home/javi/Nextcloud/Universidad/Master/1_Cuatri/FCON/final/dht/jar:/application
+      - /home/javi/Nextcloud/Universidad/Master/1_Cuatri/FCON/LAB_1/apache-zookeeper-3.6.3-bin/lib:/zookeeper-lib
+      - /home/javi/Nextcloud/Universidad/Master/1_Cuatri/FCON/LAB_1/apache-zookeeper-3.6.3-bin/bin:/zookeeper-bin
+volumes:
+  application:
+  zookeeper-lib:
+  zookeeper-bin:
 
 
 

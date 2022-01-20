@@ -3,7 +3,6 @@ package es.upm.dit.dscc.DHT;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Set;
 import java.io.Serializable;
 
@@ -13,7 +12,7 @@ public class DHTHashMap implements DHTUserInterface, Serializable{
 	// LOGGER is not serilizable
 	//private java.util.logging.Logger LOGGER = DHTMain.LOGGER;
 	private HashMap <String, Integer> hashMap = new HashMap<String, Integer>();
-		
+	private Integer num; 
 	@Override
 	public Integer put(DHT_Map map) {
 		if (map == null) {
@@ -49,22 +48,23 @@ public class DHTHashMap implements DHTUserInterface, Serializable{
 		Collection<Integer> values;
 		ArrayList<Integer> list = new ArrayList<Integer>();
 		values = hashMap.values();
-		for (Iterator iterator = values.iterator(); iterator.hasNext();) {
-			Integer integer = (Integer) iterator.next();
-			list.add(integer);
+		for (int i : values) {
+			num =  i;
+			list.add(num);
 		}
-
 		return list;
 		
 	}
 	
 	@Override
 	public Integer putMsg(DHT_Map map) {
+		//TODO
 		return null;
 	}
 
-	//@Override
+	@Override
 	public Integer removeMsg(String key) {
+		//TODO
 		return null;
 	}
 
@@ -77,11 +77,16 @@ public class DHTHashMap implements DHTUserInterface, Serializable{
 		String aux = "";
 		ArrayList<Integer> list = new ArrayList<Integer>();
 		list = 	this.values();
-		for (Iterator iterator = list.iterator(); iterator.hasNext();) {
-			Integer values = (Integer) iterator.next();
-			aux = aux + " " + values;
+		for (Integer j : list) {
+			aux = aux + " " + j;
 		}
 		return aux;
+	}
+
+	@Override
+	public Integer getMsg(String key) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 

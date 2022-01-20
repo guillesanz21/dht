@@ -1,9 +1,9 @@
-
 package es.upm.dit.dscc.DHT;
+
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Iterator;
+
 import java.util.Scanner;
 import java.util.Set;
 
@@ -15,8 +15,19 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 
+
+
 public class DHTMain {
 
+	
+   
+    private static DHTManager dht;
+    private static DHTMain mainDHT;
+    private static OperationBlocking mutex;
+	private static TableManager      tableManager;
+	private static int nReplica = 2;
+    private static DHTZookeeper op = new DHTZookeeper(mutex, tableManager, nReplica);
+    
 	static {
 		System.setProperty("java.util.logging.SimpleFormatter.format",
 				"[%1$tF %1$tT][%4$-7s] [%5$s] [%2$-7s] %n");
@@ -30,17 +41,23 @@ public class DHTMain {
 	static final Logger LOGGER = Logger.getLogger(DHTMain.class.getName());
 
 	public DHTMain() {
+		
+	  
+		//Para el servidor creado se genera el DHTManager
+		dht = new DHTManager();
+    
 		configureLogger();
 	}
 
-	//////////////////////////////////////////////////////////////////////////
 
+
+	
 	public void configureLogger() {
 		ConsoleHandler handler;
 		handler = new ConsoleHandler(); 
-		handler.setLevel(Level.WARNING); 
+		handler.setLevel(Level.FINEST); 
 		LOGGER.addHandler(handler); 
-		LOGGER.setLevel(Level.WARNING);
+		LOGGER.setLevel(Level.FINEST);
 	}
 
 	//////////////////////////////////////////////////////////////////////////
@@ -90,36 +107,36 @@ public class DHTMain {
 	}
 
 	//////////////////////////////////////////////////////////////////////////
-
+	
 	public static void main(String[] args) {
+		System.out.println("Proyecto FCON ZooKeeper");
+		
+		try {
+			Thread.sleep(5000); //Timer para la correcta configuracion de zookeeper entre ejecuciones consecutivas
+		}catch(Exception e) {
+			
+		}
+		mainDHT = new DHTMain();
+		
+		
+		
+		System.out.println("Version basada en Zookeeper");
 
 		boolean correct = false;
 		int     menuKey = 0;
 		boolean exit    = false;
 		Scanner sc      = new Scanner(System.in);
-		String cluster  = "DHT";
 
 
 		String   key    = null;
 		Integer value   = 0;
-
-		if (args.length == 0) {
-			System.out.println("Incorrect arguments: dht.Main <Number_Group>");
-			//sc.close();
-			//return;
-		} else {
-			cluster = args[0];
-		} 
-
-		DHTManager        dht        = new DHTManager(cluster);
-		DHTMain           mainDHT    = new DHTMain();
 
 		while (!exit) {
 			try {
 				correct = false;
 				menuKey = 0;
 				while (!correct) {
-					System. out .println(">>> Enter option: 1) Put. 2) Get. 3) Remove. 4) ContainKey  5) Values 7) Init 0) Exit");				
+					System. out .println(">>> Enter option: 1) Put. 2) Get. 3) Remove. 4) ContainKey  5) Values 6) Test 7) Init 0) Exit");				
 					if (sc.hasNextInt()) {
 						menuKey = sc.nextInt();
 						correct = true;
@@ -129,11 +146,10 @@ public class DHTMain {
 					}
 					
 				}
-
-				/*if (!dht.isQuorum()) {
+				if (!dht.isQuorum()) {
 					System.out.println("No hay quorum. No es posible ejecutar su elección");
 					continue;
-				}*/
+				}
 				
 				switch (menuKey) {
 				case 1: // Put
@@ -177,13 +193,17 @@ public class DHTMain {
 					System.out.println(dht.toString());
 					break;
 				case 6:
-					//Set<String> set = new HashSet<String>();
-					//set = dht.keySet();
-					//for (Iterator iterator = set.iterator(); iterator.hasNext();) {
-					//	String string = (String) iterator.next();
-					//	Integer valueSet = dht.get(string);
-					//	System.out.print("["+ string + ", "  + valueSet+ "] ");
-					//}
+					// Test
+					System.out.println("DHT should be empty for this test to work");
+					System. out .print(">>> Enter number of operations (int) = ");
+					if (sc.hasNextInt()) {
+						value = sc.nextInt();
+						new Tester().test(dht, value);
+					} else {
+						System.out.println("The provised text provided is not an integer");
+						sc.next();
+					}
+					
 					System.out.println("The option is not available");
 					break;
 

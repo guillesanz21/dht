@@ -37,8 +37,7 @@ public class OperationsDHT implements Serializable {
 	 * @param isReplica Indicate whether this operation is associated to a replica,
 	 */
 	public OperationsDHT (OperationEnum operation,
-			DHT_Map map, 
-			boolean isReplica)           {
+			DHT_Map map)           {
 		this.operation = operation;
 		this.map       = map;
 		this.isReplica = isReplica;
@@ -46,8 +45,7 @@ public class OperationsDHT implements Serializable {
 
 	// GET_MAP REMOVE_MAP CONTAINS_KEY_MAP
 	public OperationsDHT (OperationEnum operation,
-			String key,           
-			boolean isReplica) {
+			String key) {
 		this.operation = operation;
 		this.key       = key;
 		this.isReplica = isReplica;
