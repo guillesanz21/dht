@@ -13,3 +13,4 @@ RUN curl -sSL https://dlcdn.apache.org/zookeeper/zookeeper-3.6.3/apache-zookeepe
 ENV CLASSPATH=$CLASSPATH:/apache-zookeeper-3.6.3-bin/lib/*
 ENV PATH=$PATH:/apache-zookeeper-3.6.3-bin/bin
 
+RUN mkdir /tmp/z1

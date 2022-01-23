@@ -24,6 +24,11 @@ function start() {
     docker-compose up -d
 
     for (( i=1; i<=$nServers; i++ )); do
+        echo "Desplegando zookeeper número $i"
+        docker exec -it dht${i} zkServer.sh start /application/zookeeper/standalone_zk.cfg
+    done
+
+    for (( i=1; i<=$nServers; i++ )); do
         echo "Desplegando servidor número $i"
         gnome-terminal --profile=BASH --title=DHT${i} -- \
         docker exec -it dht${i} \

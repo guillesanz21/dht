@@ -10,7 +10,8 @@ services:
     restart: always
     hostname: dht1
     tty: true
-    network_mode: host
+    command: bash -c "echo 1 > /tmp/z1/myid && sleep infinity"
+    # network_mode: host
     volumes:
       - ${PWD}/jar:/application
 
@@ -24,7 +25,8 @@ services:
     restart: always
     hostname: dht2
     tty: true
-    network_mode: host
+    command: bash -c "echo 2 > /tmp/z1/myid && sleep infinity"
+    # network_mode: host
     volumes:
       - ${PWD}/jar:/application
       
@@ -37,7 +39,8 @@ services:
     restart: always
     hostname: dht3
     tty: true
-    network_mode: host
+    command: bash -c "echo 3 > /tmp/z1/myid && sleep infinity"
+    # network_mode: host
     volumes:
       - ${PWD}/jar:/application
 volumes:
