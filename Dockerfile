@@ -1,28 +1,15 @@
 FROM openjdk:13.0.2
 
-# WGET ZOOKEEPER 3.6.3
 
+# JGROUPS
+# ENV CLASSPATH=$CLASSPATH:/application/jgroups/jgroups-4.0.0-SNAPSHOT.jar
+# ENV CLASSPATH=$CLASSPATH:/application/jgroups/DHT_DSCC_JSE11.jar
 
-COPY ./jar/jgroups/jgroups-4.0.0-SNAPSHOT.jar /application/jgroups-4.0.0-SNAPSHOT.jar
-COPY ./jar/DHT_DSCC_JSE11.jar /application/DHT_DSCC_JSE11.jar
-ENV CLASSPATH=$CLASSPATH:/application/jgroups-4.0.0-SNAPSHOT.jar
-ENV CLASSPATH=$CLASSPATH:/application/DHT_DSCC_JSE11.jar
-ENV CLASSPATH=$CLASSPATH:/zookeeper-lib/*
-ENV PATH=$PATH:/zookerper-bin/*
+# ZOOKEEPER
+ENV CLASSPATH=$CLASSPATH:/application/zookeeper/DHT_DSCC_JSE11.jar
 
+RUN curl -sSL https://dlcdn.apache.org/zookeeper/zookeeper-3.6.3/apache-zookeeper-3.6.3-bin.tar.gz | tar -xzf - -C /
 
-# FROM zookeeper:3.6.3
-# # COPY ./lab_zookeeper.jar /application/lab_zookeeper.jar
-# COPY ./jar/jgroups-4.0.0-SNAPSHOT.jar /application/jgroups-4.0.0-SNAPSHOT.jar
-# # COPY ./jar/DHT_DSCC_JSE13.jar /application/DHT_DSCC_JSE13.jar
-# COPY ./jar/DHT_DSCC_JSE13.jar /application/DHT_DSCC_JSE11.jar
+ENV CLASSPATH=$CLASSPATH:/apache-zookeeper-3.6.3-bin/lib/*
+ENV PATH=$PATH:/apache-zookeeper-3.6.3-bin/bin
 
-
-# ENV CLASSPATH=$CLASSPATH:/apache-zookeeper-3.6.3-bin/lib/*
-# ENV PATH=$PATH:/apache-zookeeper-3.6.3-bin/bin
-# # ENV CLASSPATH=$CLASSPATH:/application/lab_zookeeper.jar
-# ENV CLASSPATH=$CLASSPATH:/application/jgroups-4.0.0-SNAPSHOT.jar
-# # ENV CLASSPATH=$CLASSPATH:/application/DHT_DSCC_JSE13.jar
-# ENV CLASSPATH=$CLASSPATH:/application/DHT_DSCC_JSE11.jar
-
-# # ENTRYPOINT ["/docker-entrypoint_app.sh"]

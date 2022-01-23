@@ -84,7 +84,7 @@ case "${COMMAND}" in
     rm|down)
         echo "Deleting..."
         docker-compose down
-        docker rmi fcon.dht
+        docker rmi fcon_dht
         ;;
     *)
         help
