@@ -29,6 +29,12 @@ public class DHTHashMap implements DHTUserInterface, Serializable{
 	}
 	
 	@Override
+	public Integer getMsg(String key) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	@Override
 	public Integer remove(String key) {
 		return hashMap.remove(key);
 	}

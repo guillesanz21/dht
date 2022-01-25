@@ -32,6 +32,10 @@ public interface DHTUserInterface {
 	 * @return The value of the map associated
 	 */
 	Integer get(String key);
+	
+
+	Integer getMsg(String key);
+
 
 	/**
 	 * Remove the value associated to the provided key
