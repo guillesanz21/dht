@@ -188,7 +188,8 @@ public class DHTMain {
 					//	Integer valueSet = dht.get(string);
 					//	System.out.print("["+ string + ", "  + valueSet+ "] ");
 					//}
-					System.out.println("The option is not available");
+					System.out.println("Testing system functionality");
+					new Tester().test(dht);
 					break;
 
 				case 7:

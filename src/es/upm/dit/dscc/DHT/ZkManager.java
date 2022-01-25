@@ -8,18 +8,13 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Objects;
-
 import java.util.Random;
-import java.util.Set;
 
 import org.apache.zookeeper.CreateMode;
-import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.KeeperException;
+import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
-import org.apache.zookeeper.Watcher.Event.EventType;
 import org.apache.zookeeper.ZooDefs.Ids;
 import org.apache.zookeeper.ZooKeeper;
 import org.apache.zookeeper.data.Stat;
@@ -27,7 +22,6 @@ import org.apache.zookeeper.data.Stat;
 public class ZkManager implements Watcher {
 
 	private java.util.logging.Logger LOGGER = DHTMain.LOGGER;
-	private int nReplica;
 	private int servNumMax;
 	
 	private int servNum;
@@ -60,7 +54,7 @@ public class ZkManager implements Watcher {
 	//LOCK
 	private static String lock = "/lock";
 	private static String opLock = "/opok-";
-	private static Integer mutex = -1;
+	//private static Integer mutex = -1;
 	private String lockId;
 	private static String lockLeader;
 	//DATA
@@ -77,13 +71,12 @@ public class ZkManager implements Watcher {
 
 	//JAR PATH
 	
-	private String shellCommand = "xterm -hold -e 'java es.upm.dit.dscc.DHT.DHTMain'";
+	private String shellCommand = System.getProperty("user.dir") + "/scripts/relanzaServer.sh";
 
 	//CONSTRUCTOR
-	public ZkManager(int servNumMax, int nReplica, TableManager tableManager, DHTUserInterface dht) {
+	public ZkManager(int servNumMax, TableManager tableManager, DHTUserInterface dht) {
 		this.servNum = 0;
 		this.servNumMax = servNumMax;
-		this.nReplica = nReplica;
 		this.tableManager = tableManager; 
 		this.dht = dht;
 		Random rand = new Random();
@@ -167,48 +160,23 @@ public class ZkManager implements Watcher {
 				this.tableManager.setLocalAddress(identifier);
 				
 				//manageZnode metemos un nuevo znode a las tablas.
-				List<String> al = zk.getChildren(servers, false, stats.get(0));
-				int index = al.size() - 1; 	
-				
+				List<String> al = zk.getChildren(servers, false, stats.get(0));				
 				Collections.sort(al);
 		        // Delete last element by passing index 
 		        al.remove(al.size()-1);
 		        
-				serversManager(al);
+				serverManager(al);
 				
 				position = tableManager.getPosition(identifier);
 				
 				//Si existen los tres servidores, guardamso las tablas para porder recuperarlas mas adelante. 
 				if (servNum == 3) {					
 					HashMap<Integer, DHTUserInterface> DHTTables = tableManager.getDHTTables();
-					HashMap<Integer, DHTUserInterface> table0 = null;
-					HashMap<Integer, DHTUserInterface> table1 = null; 
-					HashMap<Integer, DHTUserInterface> table2 = null;
+					HashMap<Integer, DHTUserInterface> table0 = getTables(tableList[0]);
+					HashMap<Integer, DHTUserInterface> table1 = getTables(tableList[1]); 
+					HashMap<Integer, DHTUserInterface> table2 = getTables(tableList[2]);
 					
 					
-					for(int j = 0; j< tableList.length; j++){
-						switch (j) {
-							case 0: 
-								LOGGER.info("Creamos la primera tabla");
-								HashMap<Integer, DHTUserInterface> newtable0 = getTables(tableList[j]);
-								table0 = newtable0;
-						    	break;
-							case 1:
-								LOGGER.info("Creamos la segunda tabla");
-								HashMap<Integer, DHTUserInterface> newtable1 = getTables(tableList[j]);
-								table1 = newtable1;
-								break;
-							case 2:
-								LOGGER.info("Creamos la tercera tabla");
-								HashMap<Integer, DHTUserInterface> newtable2 = getTables(tableList[j]);
-								table2 = newtable2;
-								break;	
-							default: 
-								return; 
-
-						}
-						
-					}
 					if (table2 == null) {
 						table2 = new HashMap<Integer, DHTUserInterface>();
 					} else {
@@ -231,12 +199,7 @@ public class ZkManager implements Watcher {
 					}
 				}
 				
-				
-				
-				
-				
-				//Watcher gestion de servidores
-				
+								
 				List<String>list = zk.getChildren(servers, watcherServer, stats.get(0));
 				System.out.println(">>>>>>>>>>>       Nuevo Servidor en el entorno Zookeeper " + identifier + "<<<<<<<<<<<<<");
 				LOGGER.info("Znodes hijos de servers:  " + list.size());
@@ -268,7 +231,7 @@ public class ZkManager implements Watcher {
 		}
 	}
 	
-	//Metodo para resetear el estado del zookeeper
+	// Resetea los znodes
 	private void reset(ZooKeeper zk) {
 		try {
 			LOGGER.info("Reseting Znodes...");
@@ -326,15 +289,13 @@ public class ZkManager implements Watcher {
 		public void process(WatchedEvent event) {
 			System.out.println("------------------------------------Watcher Member------------------------------------\n");
 			try {
-				List<String> al = zk.getChildren(servers, watcherServer);
-				int index = al.size() - 1; 	
-				
+				List<String> al = zk.getChildren(servers, watcherServer);				
 				Collections.sort(al);
 		        // Delete last element by passing index 
-		        al.remove(index);	
+		        al.remove(al.size() - 1);	
 		       
 		        LOGGER.info("Modified ArrayList : " + al); 
-				serversManager(al);
+				serverManager(al);
 				if (isLeader()) {
 					setServers(tableManager.getDHTServers());
 				}
@@ -354,15 +315,15 @@ public class ZkManager implements Watcher {
 	
 	
 
-	public boolean serversManager(List<String> newServers) {
+	public boolean serverManager(List<String> newServers) {
 		
 		
 		//SI SE CAE UN SERVIDOR
 		if (oldServers != null && newServers.size() < oldServers.size()) {
 			LOGGER.warning("Un servidor se ha caido!!! > NO QUORUM");
 			Collections.sort(newServers);
-			String downServer = servidorCaido(oldServers, newServers);
-			borraServer(downServer);
+			String downServer = getDownServer(oldServers, newServers);
+			removeServer(downServer);
 			servNum--;
 			isQuorum = false;
 			oldServers = newServers;
@@ -371,10 +332,11 @@ public class ZkManager implements Watcher {
 				if (isLeader()) {
 					try {
 						System.out.println(">>  Relanzamos Servidor caido ");
-						List<String> cmdList = new ArrayList<String>();
+						List<String> command = new ArrayList<String>();
 					      // adding command and args to the list
-					    cmdList.add(shellCommand);
-					    ProcessBuilder pb = new ProcessBuilder(cmdList);
+						command.add("sh");
+						command.add(shellCommand);
+					    ProcessBuilder pb = new ProcessBuilder(command);
 					    pb.start();
 					} catch (IOException e) {
 						LOGGER.warning("Something went wrong trying to restart the server:  " + e);
@@ -465,7 +427,7 @@ public class ZkManager implements Watcher {
 		LOGGER.warning("Error: This sentence shound not run");
 		return null;
 	}
-	public Integer borraServer(String address) {
+	public Integer removeServer(String address) {
 		HashMap<Integer, String> DHTServers = tableManager.getDHTServers();
 		for (int i = 0; i < servNumMax; i++) {
 			if (address.equals(DHTServers.get(i))) {
@@ -476,12 +438,10 @@ public class ZkManager implements Watcher {
 		return null;
 	}
 
-	public String servidorCaido(List<String> oldServers, List<String> newServers) {
-		for (int k = 0; k < newServers.size(); k++) {
-			if (oldServers.get(k).equals(newServers.get(k))) {
-			} else {
-				return oldServers.get(k);
-			}
+	public String getDownServer(List<String> oldServers, List<String> newServers) {
+		for (int i = 0; i < newServers.size(); i++) {
+			if (!oldServers.get(i).equals(newServers.get(i))) 
+				return oldServers.get(i);
 		}
 		return oldServers.get(oldServers.size() - 1);
 	}
@@ -648,7 +608,7 @@ public class ZkManager implements Watcher {
 				return true;
 			} else {
 				//no es lider. Esperamos a que el lider termine la operacion.
-				Stat s = zk.exists(lockLeader, watcherLock);
+				//Stat s = zk.exists(lockLeader, watcherLock);
 				LOGGER.info("NO soy el lider espero a que lock: " + leader + " acabe.");				 
 			
 				do{					
@@ -693,27 +653,6 @@ public class ZkManager implements Watcher {
 			}
 		};
 			
-	// Notified when the number of children in /locknode is updated
-	private Watcher  watcherLock = new Watcher() {
-		public void process(WatchedEvent event) {
-				
-			try {
-				LOGGER.info(" Lock Actualizado!!");
-				
-				// Al recibir el watcher de cualquier nodo notifico a mi hebra de que levante el bloqueo
-				synchronized (mutex) {
-					mutex.notify();
-				}
-				List<String> list = zk.getChildren(lock,  false);		
-				LOGGER.info("¿Cuantas lock quedan? ");		
-				LOGGER.info("    >>Quedan: " + list.size() + " Locks");
-				muestraZnodes(list);
-			} catch (Exception e) {
-				LOGGER.warning("Exception: watcherLock");
-				//LOGGER.warning("Exception: " + e);
-			}
-		}
-	};
 	
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////

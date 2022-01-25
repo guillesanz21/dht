@@ -50,7 +50,7 @@ public class DHTManager implements DHTUserInterface {
 		}
 		this.tableManager    = new TableManager(localAddress, nServersMax, nReplica);
 		this.dht             = new DHTZookeeper(mutex, tableManager, nReplica);
-		this.zkManager        = new ZkManager(nServersMax, nReplica, tableManager, dht);
+		this.zkManager        = new ZkManager(nServersMax, tableManager, dht);
 		this.endConfigure    = true;
 	}
 	
