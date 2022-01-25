@@ -1,8 +1,5 @@
 #! /bin/bash
 
-# TODO:
-# - Añadir opción y crear un script para arrancar un servidor ante la caída de un servidor === TOLERANCIA FALLOS.
-
 
 # =================================================================================================================
 # Functions:
@@ -36,6 +33,22 @@ function start() {
     done
 }
 
+function relaunch() {
+    nServers=3
+    echo "¿Qué servidor quieres relanzar?"
+    read nServer
+
+    echo "Redesplegando el servidor número $nServer"
+
+    docker-compose up dht${nServer} -d
+
+    docker exec -it dht${nServer} zkServer.sh start /application/zookeeper/standalone_zk.cfg
+
+    gnome-terminal --profile=BASH --title=DHT${nServer} -- \
+    docker exec -it dht${nServer} \
+    java -Djava.net.preferIPv4Stack=true -Djgroups.bind_addr=127.0.0.1 es.upm.dit.dscc.DHT.DHTMain DHT_DSCC $nServers
+}
+
 
 # =================================================================================================================
 # HELP:
@@ -56,6 +69,7 @@ help() {
              are not deleted so they will be reused the next time you run start.
     
       down|rm - Brings down the services and removes the containers.
+      relaunch|restart - Relaunch the downed server
 EOF
   exit 1
 }
@@ -90,6 +104,10 @@ case "${COMMAND}" in
         echo "Deleting..."
         docker-compose down
         docker rmi fcon_dht
+        ;;
+    restart|relaunch)
+        echo "Relaunching..."
+        relaunch
         ;;
     *)
         help

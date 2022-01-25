@@ -1,6 +1,6 @@
 # Aplicación distribuida que maneja una DHT
 
-Esta aplicación está basada en JGroups.
+Esta aplicación está basada en Zookeeper
 
 Al abrirlo con Eclipse:
 
@@ -22,12 +22,17 @@ Para pararlo:
 ```
 
 Otras opciones:
+- relaunch --> Relanza servidor caído
 - logs
 - stop
 - help
 
 
-## Para ejecutarlo en LOCAL
+## Para ejecutarlo en LOCAL (OLD)
+
+No funciona ya, puesto que estan los comandos para ejecutar en local para la versión de JGroups (antigua), pero no con Zookeeper.
+
+De todas maneras, el procedimiento es similar, cambiando las rutas correspondientes de JGroups por Zookeeper.
 
 Instalar openjdk-13:
 

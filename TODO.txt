@@ -2,25 +2,20 @@
 	* Cambia el nombre Data -> DataHandler.
 	* ¿Para qué es?
 * Serializator.java
+	* HAY QUE SABER PARA QUé SIRVE (lo preguntará por lo que vi en el video que hizo él)
 	* Cambia el nombre de algunas variables.
 	* ¿Para qué es?
 		* Parece que serializar información de un servidor a otro.
 * zkManager.java
 	* Cambiar comentarios y esqueleto.
 * Tester.java
-	* Testeador, se puede quitar. Nos puede servir para saber que funciona.
+	* HAY QUE QUITARLO ANTES DE ENTREGARLO
+	* Nos puede servir para saber que funciona.
 * zkOperations.java
 	* No cambia mucho pero está bien.
-* DHTMain.java
-	* Estamos usando la del año pasado, habría que poner la de este año.
-	* Poner algo parecido en el main a lo de los chavales (proyecto FCON, ...).
-	* ¿Qué cojones hacer el Thread.sleep()? Si no funciona, metero Thread.sleep(5000) al principio de main().
-	* 
-
 * DHT_Map.hjava
     * Mapa clave valor.
 * TableManager.java
-    *
     * DHTServers: contiene un asignador servidor-posición.
     * DHTTables:
 
