@@ -87,7 +87,7 @@ public class ZkOperation implements Watcher{
 	};
 
 	
-	// Muestra cuando el numero de hijos se han actualizado
+	// Watcher que vigila el número de hijos, notificando los cambios
 	private Watcher  watcherOperation = new Watcher() {
 		public void process(WatchedEvent event) {
 			System.out.println("<<<<<<<<<<<<<   Watcher Operation  >>>>>>>>>>>>>\n");		
@@ -101,7 +101,7 @@ public class ZkOperation implements Watcher{
 		}
 	};
 	
-	// Notifica cuando los datos han sido actualizados
+	// Watcher que vigilta los datos, notificando los cambios
 	private Watcher  watcherData = new Watcher() {
 		public void process(WatchedEvent event) {
 			System.out.println("<<<<<<<<<<<<<   Watcher Data   >>>>>>>>>>>>>\n");		
@@ -175,9 +175,6 @@ public class ZkOperation implements Watcher{
 
 	
 	}
-	
-
-
 	
 	
 }

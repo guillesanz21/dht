@@ -32,10 +32,8 @@ public class DHTZookeeper implements DHTUserInterface {
 	@Override
 	public Integer put(DHT_Map map) {
 		LOGGER.finest("PUT: Is invoked");
-		//OperationsDHT operation = auxOpeMap(OperationEnum.PUT_MAP, map);
 		OperationsDHT operation = prepareOperation(OperationEnum.PUT_MAP, null, map);
-		LOGGER.finest("Returned value in put: " + operation.getValue());
-		System.out.println("El resultado es : " + operation.getValue());
+		LOGGER.info("Returned value in put: " + operation.getValue());
 		return operation.getValue();			
 	}
 	
@@ -54,8 +52,7 @@ public class DHTZookeeper implements DHTUserInterface {
 
 		LOGGER.finest("GET: Is invoked");
 		OperationsDHT operation = prepareOperation(OperationEnum.GET_MAP, key, null); 
-		LOGGER.finest("Returned value in get: " + operation.getValue());
-		System.out.println("El resultado es : " + operation.getValue());
+		LOGGER.info("Returned value in get: " + operation.getValue());
 		return operation.getValue();
 	}
 	@Override
@@ -82,8 +79,7 @@ public class DHTZookeeper implements DHTUserInterface {
 
 		LOGGER.finest("REMOVE: Is invoked");
 		OperationsDHT operation = prepareOperation(OperationEnum.REMOVE_MAP, key, null);
-		//OperationsDHT operation = prepareOperation(OperationEnum.REMOVE_MAP, key, null); 	
-		LOGGER.finest("Returned value in remove: " + operation.getValue());
+		LOGGER.info("Returned value in remove: " + operation.getValue());
 		return operation.getValue();
 
 
@@ -129,20 +125,12 @@ public class DHTZookeeper implements DHTUserInterface {
 		return tableManager.toString();
 
 	}
+
+
 	/*
-	 * En este método decidimos como se van a pasar las operaciones entre los servidores. El orden de los datos es: 
-	 * 	1) El primer dato sera Nreplica, el array de replicas
-	 * 	2) Los nodos a los que afecta la operacion
-	 * 	3) la operacion en si
-	 * Serializamos los datos y se los pasamos a zkOp que crea los nodos para las operaciones. 
-	 * Actualizamos el OprationpBlocking a través del mutex de tal manera de que no se realicen dos operaciones a la vez y haya exclusión mutua.
+	 * Este método se encarga de serializar los datos (número de réplica, servidores implicados y operación) y pasársela a zkOperations para 
+	 * que este se encargue de crear los Znodos correspondientes de Zookeeper.
 	 */
-	
-
-
-	
-	
-	
 	public OperationsDHT prepareOperation(OperationEnum Op, String key, DHT_Map map) {
 		OperationsDHT operation;
 		int nodes[];
